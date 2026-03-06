@@ -51,6 +51,23 @@ export const formatTime = (date: Date): string => {
   });
 };
 
+export const parseAmPmTime = (timeStr: string): string => {
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return timeStr;
+
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+
+  if (period === 'AM') {
+    if (hours === 12) hours = 0;
+  } else {
+    if (hours !== 12) hours += 12;
+  }
+
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
 export const extractFlightNumber = (url: string): string => {
   const parts = url.split('-');
   return parts.length > 3 ? `${parts[2]} ${parts[3]}` : '';

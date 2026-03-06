@@ -8,9 +8,10 @@ interface ErrorResponse {
 
 export class Api {
   private static corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'https://89transfers.com',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
   };
 
   private static jsonResponse(data: any, status: number = 200): Response {
@@ -60,8 +61,8 @@ export class Api {
 
       // Flight search endpoint
       if (url.pathname === '/flights') {
-        const originCode = url.searchParams.get('origin');
-        const destinationCode = url.searchParams.get('destination');
+        let originCode = url.searchParams.get('origin');
+        let destinationCode = url.searchParams.get('destination');
         const date = url.searchParams.get('date');
 
         // Validate parameters
@@ -72,6 +73,10 @@ export class Api {
             { params: { originCode, destinationCode, date } }
           );
         }
+
+        // Normalize airport codes to uppercase
+        originCode = originCode.toUpperCase();
+        destinationCode = destinationCode.toUpperCase();
 
         // Validate airport codes
         if (!/^[A-Z]{3}$/.test(originCode) || !/^[A-Z]{3}$/.test(destinationCode)) {

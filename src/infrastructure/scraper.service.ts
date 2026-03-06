@@ -1,5 +1,5 @@
 import { Flight, FlightResponse } from '../domain/types';
-import { cleanText, parseDuration, extractLogoUrl, formatTime } from './scraper.utils';
+import { cleanText, parseDuration, extractLogoUrl, formatTime, parseAmPmTime } from './scraper.utils';
 import { v4 as uuidv4 } from 'uuid';
 
 export class ScraperService {
@@ -143,8 +143,7 @@ export class ScraperService {
               let time = cleanText(label.replace('Departure time: ', '').replace('.', ''));
               // Convert to 24-hour format if in AM/PM format
               if (time.includes('AM') || time.includes('PM')) {
-                const date = new Date(`1/1/2023 ${time}`);
-                time = formatTime(date);
+                time = parseAmPmTime(time);
               }
               currentFlight.departure = time;
             }
@@ -157,8 +156,7 @@ export class ScraperService {
               let time = cleanText(label.replace('Arrival time: ', '').replace('.', ''));
               // Convert to 24-hour format if in AM/PM format
               if (time.includes('AM') || time.includes('PM')) {
-                const date = new Date(`1/1/2023 ${time}`);
-                time = formatTime(date);
+                time = parseAmPmTime(time);
               }
               currentFlight.arrival = time;
             }
@@ -223,7 +221,7 @@ export class ScraperService {
                   currentFlight.arrival && 
                   currentFlight.duration > 0) {
                 // Store flight in unique flights map
-                const key = `${currentFlight.flight}-${currentFlight.departure}`;
+                const key = `${currentFlight.departure}-${currentFlight.arrival}-${currentFlight.departure_date}`;
                 uniqueFlights.set(key, { ...currentFlight });
                 // Reset for next flight
                 currentFlight = ScraperService.createEmptyFlight();

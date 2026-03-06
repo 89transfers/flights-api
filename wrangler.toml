@@ -1,4 +1,4 @@
-name = "google-flights-scraper"
+name = "flights-api"
 main = "dist/index.js"
 compatibility_date = "2024-03-10"
 

@@ -217,9 +217,15 @@ export class ScraperService {
               response.bookingToken = url;
 
               // Store flight if we have all required data
-              if (currentFlight.departure && 
-                  currentFlight.arrival && 
+              if (currentFlight.departure &&
+                  currentFlight.arrival &&
                   currentFlight.duration > 0) {
+                // Fix overnight flights: if arrival < departure, arrival is next day
+                if (currentFlight.arrival < currentFlight.departure) {
+                  const d = new Date(currentFlight.departure_date);
+                  d.setDate(d.getDate() + 1);
+                  currentFlight.arrival_date = d.toISOString().slice(0, 10);
+                }
                 // Store flight in unique flights map
                 const key = `${currentFlight.departure}-${currentFlight.arrival}-${currentFlight.departure_date}`;
                 uniqueFlights.set(key, { ...currentFlight });
